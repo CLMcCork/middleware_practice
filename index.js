@@ -20,6 +20,16 @@ app.use('/dogs', (req, res, next) => {
     next();
 })
 
+//fake password function (not real auth)
+//this is middleware that is used to see if they query password is entered 
+const verifyPassword = (req, res, next) => {
+    const { password } = req.query;
+    if(password === 'chickennugget') {
+        next();
+    }
+    res.send('Sorry you need the secret password!')
+};
+
 // app.use((req, res, next) => {
 //     console.log("This is my first middleware!");
 //     next();
@@ -39,6 +49,12 @@ app.get('/dogs', (req, res) => {
     console.log(`REQUEST DATE: ${req.requestTime}`)
     res.send('WOOOOOOF!'); 
 });
+
+//route for fake secret password 
+app.get('/secret', verifyPassword, (req, res) => {
+    res.send('MY SECRET IS: I have the two best goldendoodles in the world!!!');
+})
+
 
 //setting up a 404 route
 //then could render back a nice 404 not found template 
