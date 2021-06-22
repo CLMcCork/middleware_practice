@@ -7,6 +7,14 @@ const morgan = require('morgan');
 
 //tells express that on every single request, use the middleware called 'morgan'
 app.use(morgan('dev'));
+app.use((req, res, next) => {
+    console.log("This is my first middleware!");
+    next();
+});
+app.use((req, res, next) => {
+    console.log("This is my second middleware!");
+    next();
+});
 
 
 app.get('/', (req, res) => {
