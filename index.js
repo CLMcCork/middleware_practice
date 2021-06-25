@@ -6,6 +6,10 @@ const app = express();
 const morgan = require('morgan');
 const { nextTick } = require('process');
 
+//require AppError 
+const AppError = require('./AppError');
+
+
 //tells express that on every single request, use the middleware called 'morgan'
 app.use(morgan('dev'));
 
@@ -27,8 +31,9 @@ const verifyPassword = (req, res, next) => {
     if(password === 'chickennugget') {
         next();
     }
+    throw new AppError('Password required!!!!', 401);
     //res.send('Sorry you need the secret password!')
-    throw new Error('Password required!')
+    //throw new AppError('Password required!', 400)
 };
 
 // app.use((req, res, next) => {
@@ -60,6 +65,10 @@ app.get('/secret', verifyPassword, (req, res) => {
     res.send('MY SECRET IS: I have the two best goldendoodles in the world!!!');
 })
 
+app.get('/admin', (req, res) => {
+    throw new AppError('YOU ARE NOT AN ADMIN!', 403);
+})
+
 
 //setting up a 404 route
 //then could render back a nice 404 not found template 
@@ -70,13 +79,20 @@ app.use((req, res) => {
 
 //custom error handling middleware
 //has to be at bottom of file 
-app.use((err, req, res, next) => {
-    console.log("********************************")
-    console.log("**************ERROR*************")
-    console.log("********************************")
+// app.use((err, req, res, next) => {
+//     console.log("********************************")
+//     console.log("**************ERROR*************")
+//     console.log("********************************")
     //res.status(500).send("Oh no! There was an error!")
-    console.log(err);
-    next(err);  //causes you to hit the built in error handler 
+    // console.log(err);
+    // next(err);  //causes you to hit the built in error handler 
+// }); 
+
+
+//error handler 
+app.use((err, req, res, next) => {
+   const { status = 500 , message = 'Something went wrong!' } = err;
+   res.status(status).send(message);
 }); 
 
 app.listen(3000, () => {
