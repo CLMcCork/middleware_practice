@@ -27,7 +27,8 @@ const verifyPassword = (req, res, next) => {
     if(password === 'chickennugget') {
         next();
     }
-    res.send('Sorry you need the secret password!')
+    //res.send('Sorry you need the secret password!')
+    throw new Error('Password required!')
 };
 
 // app.use((req, res, next) => {
@@ -43,6 +44,10 @@ const verifyPassword = (req, res, next) => {
 app.get('/', (req, res) => {
     console.log(`REQUEST DATE: ${req.requestTime}`)
     res.send('HOME PAGE!'); 
+});
+
+app.get('/error', (req, res) => {
+    chicken.fly()
 });
 
 app.get('/dogs', (req, res) => {
@@ -63,6 +68,16 @@ app.use((req, res) => {
     res.status(404).send("NOT FOUND!"); 
 });
 
+//custom error handling middleware
+//has to be at bottom of file 
+app.use((err, req, res, next) => {
+    console.log("********************************")
+    console.log("**************ERROR*************")
+    console.log("********************************")
+    //res.status(500).send("Oh no! There was an error!")
+    console.log(err);
+    next(err);  //causes you to hit the built in error handler 
+}); 
 
 app.listen(3000, () => {
     console.log('App is running on port 3000!')
